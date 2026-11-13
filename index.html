@@ -11,7 +11,7 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial, sans-serif;
+font-family:Arial,sans-serif;
 }
 
 body{
@@ -39,8 +39,15 @@ margin-bottom:15px;
 font-size:2.5rem;
 }
 
+#timer{
+font-size:32px;
+font-weight:bold;
+color:#e74c3c;
+margin-bottom:20px;
+}
+
 #pregunta{
-font-size:1.6rem;
+font-size:1.5rem;
 font-weight:bold;
 min-height:140px;
 display:flex;
@@ -66,17 +73,17 @@ transform:scale(1.05);
 }
 
 .si{
-background:#4CAF50;
+background:#2ecc71;
 color:white;
 }
 
 .no{
-background:#F44336;
+background:#e74c3c;
 color:white;
 }
 
 .comenzar{
-background:#2196F3;
+background:#3498db;
 color:white;
 }
 
@@ -86,36 +93,36 @@ display:none;
 }
 
 #resultado{
-margin-top:20px;
+margin-top:15px;
 font-size:1.4rem;
 font-weight:bold;
 min-height:50px;
 }
 
 #puntaje{
-margin-top:15px;
-font-size:1.4rem;
-color:#FF9800;
+margin-top:10px;
+font-size:1.3rem;
 font-weight:bold;
+color:#f39c12;
 }
 
 .versiculo{
 margin-top:25px;
 padding:15px;
-background:#f3f3f3;
+background:#f5f5f5;
 border-radius:10px;
 font-style:italic;
 }
 
 .animar{
-animation:aparecer .5s ease;
+animation:entrada .5s ease;
 }
 
-@keyframes aparecer{
+@keyframes entrada{
 
 from{
 opacity:0;
-transform:translateY(25px);
+transform:translateY(20px);
 }
 
 to{
@@ -134,17 +141,21 @@ transform:translateY(0);
 
 <h1>👑 Hijos de Dios</h1>
 
+<div id="timer">
+⏰ Tiempo: 05:00
+</div>
+
 <div id="pregunta">
 
-👋 Bienvenidos al Scanner de Dios
+👋 Bienvenido al Scanner de Dios
 
 <br><br>
 
-Tendrás que decidir si cada acción pasa o no el Scanner de Dios.
+Responde las preguntas antes de que termine el tiempo.
 
 <br><br>
 
-Presiona COMENZAR para iniciar.
+Presiona COMENZAR.
 
 </div>
 
@@ -170,7 +181,8 @@ Presiona COMENZAR para iniciar.
 
 <div class="versiculo">
 Romanos 8:15<br>
-"Han recibido el Espíritu de adopción, por el cual clamamos: ¡Abba, Padre!"
+"Han recibido el Espíritu de adopción, por el cual clamamos:
+¡Abba, Padre!"
 </div>
 
 </div>
@@ -201,40 +213,110 @@ let yaRespondio = false;
 
 let preguntasDisponibles = [...preguntas];
 
-function siguientePregunta(){
+let tiempoRestante = 300;
+let temporizadorIniciado = false;
+let juegoTerminado = false;
 
-if(preguntaActual >= preguntas.length){
+function iniciarTemporizador(){
 
-document.getElementById("pregunta").innerHTML = `
-🎉 ¡Actividad Terminada! 🎉
-<br><br>
-🏆 Puntaje Final: ${puntos} de ${preguntas.length}
-<br><br>
-✍️ Ahora escribe tu puntaje en el chat de Teams.
-`;
+if(temporizadorIniciado) return;
 
-document.getElementById("btnSi").style.display = "none";
-document.getElementById("btnNo").style.display = "none";
-document.getElementById("btnComenzar").style.display = "none";
+temporizadorIniciado = true;
 
+const intervalo = setInterval(()=>{
+
+if(juegoTerminado){
+
+clearInterval(intervalo);
 return;
 
 }
 
-document.getElementById("btnComenzar").style.display = "none";
+tiempoRestante--;
 
-document.getElementById("btnSi").style.display =
+const minutos =
+Math.floor(tiempoRestante / 60);
+
+const segundos =
+tiempoRestante % 60;
+
+document.getElementById("timer").innerHTML =
+`⏰ Tiempo: ${String(minutos).padStart(2,"0")}:${String(segundos).padStart(2,"0")}`;
+
+if(tiempoRestante <= 0){
+
+finalizarJuego();
+clearInterval(intervalo);
+
+}
+
+},1000);
+
+}
+
+function finalizarJuego(){
+
+juegoTerminado = true;
+
+document.getElementById("pregunta").innerHTML = `
+⏰ ¡Tiempo terminado!
+<br><br>
+🏆 Puntaje Final: ${puntos} de ${preguntas.length}
+<br><br>
+📸 Toma una captura de pantalla y envíala por el chat de Teams.
+`;
+
+document.getElementById("btnSi").style.display="none";
+document.getElementById("btnNo").style.display="none";
+document.getElementById("btnComenzar").style.display="none";
+
+let medalla = "";
+
+if(puntos >= 10){
+
+medalla = "🥇 MEDALLA DE ORO";
+
+}else if(puntos >= 6){
+
+medalla = "🥈 MEDALLA DE PLATA";
+
+}else{
+
+medalla = "🥉 MEDALLA DE BRONCE";
+
+}
+
+document.getElementById("resultado").innerHTML =
+medalla;
+
+}
+
+function siguientePregunta(){
+
+if(juegoTerminado) return;
+
+iniciarTemporizador();
+
+if(preguntaActual >= preguntas.length){
+
+finalizarJuego();
+return;
+
+}
+
+document.getElementById("btnComenzar").style.display="none";
+
+document.getElementById("btnSi").style.display=
 "inline-block";
 
-document.getElementById("btnNo").style.display =
+document.getElementById("btnNo").style.display=
 "inline-block";
 
-document.getElementById("resultado").innerHTML = "";
-
-yaRespondio = false;
+document.getElementById("resultado").innerHTML="";
+yaRespondio=false;
 
 const indice =
-Math.floor(Math.random() * preguntasDisponibles.length);
+Math.floor(Math.random()*preguntasDisponibles.length);
 
 actual = preguntasDisponibles[indice];
 
@@ -249,7 +331,7 @@ preguntaDiv.classList.remove("animar");
 
 setTimeout(()=>{
 
-preguntaDiv.innerHTML = `
+preguntaDiv.innerHTML=`
 📖 Pregunta ${preguntaActual} de ${preguntas.length}
 <br><br>
 ${actual.texto}
@@ -263,47 +345,49 @@ preguntaDiv.classList.add("animar");
 
 function responder(valor){
 
-if(actual === null || yaRespondio){
+if(actual===null ||
+yaRespondio ||
+juegoTerminado){
 return;
 }
 
-yaRespondio = true;
+yaRespondio=true;
 
-if(valor === actual.respuesta){
+if(valor===actual.respuesta){
 
-document.getElementById("resultado").innerHTML =
+document.getElementById("resultado").innerHTML=
 "✅ ¡Correcto!";
 
 puntos++;
 
 }else{
 
-document.getElementById("resultado").innerHTML =
-"❌ Respuesta incorrecta";
+document.getElementById("resultado").innerHTML=
+"❌ Incorrecto";
 
 }
 
-document.getElementById("puntaje").innerHTML =
+document.getElementById("puntaje").innerHTML=
 "🏆 Puntaje: " + puntos;
 
-document.getElementById("btnSi").style.display =
+document.getElementById("btnSi").style.display=
 "none";
 
-document.getElementById("btnNo").style.display =
+document.getElementById("btnNo").style.display=
 "none";
 
-document.getElementById("btnComenzar").style.display =
+document.getElementById("btnComenzar").style.display=
 "inline-block";
 
 if(preguntaActual < preguntas.length){
 
-document.getElementById("btnComenzar").innerHTML =
+document.getElementById("btnComenzar").innerHTML=
 "➡️ Siguiente Pregunta";
 
 }else{
 
-document.getElementById("btnComenzar").innerHTML =
-"🏆 Ver Resultado Final";
+document.getElementById("btnComenzar").innerHTML=
+"🏁 Ver Resultado";
 
 }
 
