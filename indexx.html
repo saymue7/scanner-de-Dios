@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scanner de Dios</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#4e54c8,#8f94fb);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.container{
+background:white;
+width:100%;
+max-width:850px;
+padding:30px;
+border-radius:20px;
+text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+h1{
+color:#4e54c8;
+margin-bottom:15px;
+font-size:2.5rem;
+}
+
+#pregunta{
+font-size:1.6rem;
+font-weight:bold;
+min-height:140px;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+padding:15px;
+}
+
+button{
+border:none;
+padding:15px 30px;
+margin:10px;
+border-radius:12px;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.si{
+background:#4CAF50;
+color:white;
+}
+
+.no{
+background:#F44336;
+color:white;
+}
+
+.comenzar{
+background:#2196F3;
+color:white;
+}
+
+#btnSi,
+#btnNo{
+display:none;
+}
+
+#resultado{
+margin-top:20px;
+font-size:1.4rem;
+font-weight:bold;
+min-height:50px;
+}
+
+#puntaje{
+margin-top:15px;
+font-size:1.4rem;
+color:#FF9800;
+font-weight:bold;
+}
+
+.versiculo{
+margin-top:25px;
+padding:15px;
+background:#f3f3f3;
+border-radius:10px;
+font-style:italic;
+}
+
+.animar{
+animation:aparecer .5s ease;
+}
+
+@keyframes aparecer{
+
+from{
+opacity:0;
+transform:translateY(25px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>👑 Hijos de Dios</h1>
+
+<div id="pregunta">
+
+👋 Bienvenidos al Scanner de Dios
+
+<br><br>
+
+Tendrás que decidir si cada acción pasa o no el Scanner de Dios.
+
+<br><br>
+
+Presiona COMENZAR para iniciar.
+
+</div>
+
+<button id="btnComenzar" class="comenzar" onclick="siguientePregunta()">
+🚀 Comenzar
+</button>
+
+<br>
+
+<button id="btnSi" class="si" onclick="responder(true)">
+🟢 SÍ PASA
+</button>
+
+<button id="btnNo" class="no" onclick="responder(false)">
+🔴 NO PASA
+</button>
+
+<div id="resultado"></div>
+
+<div id="puntaje">
+🏆 Puntaje: 0
+</div>
+
+<div class="versiculo">
+Romanos 8:15<br>
+"Han recibido el Espíritu de adopción, por el cual clamamos: ¡Abba, Padre!"
+</div>
+
+</div>
+
+<script>
+
+const preguntas = [
+
+{texto:"Ayudar a un compañero que lo necesita",respuesta:true},
+{texto:"Mentir para evitar un castigo",respuesta:false},
+{texto:"Orar antes de dormir",respuesta:true},
+{texto:"Burlarse de otra persona",respuesta:false},
+{texto:"Obedecer a los padres",respuesta:true},
+{texto:"Golpear a un compañero",respuesta:false},
+{texto:"Compartir con los demás",respuesta:true},
+{texto:"Decir palabras ofensivas",respuesta:false},
+{texto:"Dar gracias a Dios",respuesta:true},
+{texto:"Hacer trampa para ganar",respuesta:false},
+{texto:"Perdonar a quien me ofendió",respuesta:true},
+{texto:"Ayudar en casa sin que me lo pidan",respuesta:true}
+
+];
+
+let actual = null;
+let puntos = 0;
+let preguntaActual = 0;
+let yaRespondio = false;
+
+let preguntasDisponibles = [...preguntas];
+
+function siguientePregunta(){
+
+if(preguntaActual >= preguntas.length){
+
+document.getElementById("pregunta").innerHTML = `
+🎉 ¡Actividad Terminada! 🎉
+<br><br>
+🏆 Puntaje Final: ${puntos} de ${preguntas.length}
+<br><br>
+✍️ Ahora escribe tu puntaje en el chat de Teams.
+`;
+
+document.getElementById("btnSi").style.display = "none";
+document.getElementById("btnNo").style.display = "none";
+document.getElementById("btnComenzar").style.display = "none";
+
+return;
+
+}
+
+document.getElementById("btnComenzar").style.display = "none";
+
+document.getElementById("btnSi").style.display =
+"inline-block";
+
+document.getElementById("btnNo").style.display =
+"inline-block";
+
+document.getElementById("resultado").innerHTML = "";
+
+yaRespondio = false;
+
+const indice =
+Math.floor(Math.random() * preguntasDisponibles.length);
+
+actual = preguntasDisponibles[indice];
+
+preguntasDisponibles.splice(indice,1);
+
+preguntaActual++;
+
+const preguntaDiv =
+document.getElementById("pregunta");
+
+preguntaDiv.classList.remove("animar");
+
+setTimeout(()=>{
+
+preguntaDiv.innerHTML = `
+📖 Pregunta ${preguntaActual} de ${preguntas.length}
+<br><br>
+${actual.texto}
+`;
+
+preguntaDiv.classList.add("animar");
+
+},50);
+
+}
+
+function responder(valor){
+
+if(actual === null || yaRespondio){
+return;
+}
+
+yaRespondio = true;
+
+if(valor === actual.respuesta){
+
+document.getElementById("resultado").innerHTML =
+"✅ ¡Correcto!";
+
+puntos++;
+
+}else{
+
+document.getElementById("resultado").innerHTML =
+"❌ Respuesta incorrecta";
+
+}
+
+document.getElementById("puntaje").innerHTML =
+"🏆 Puntaje: " + puntos;
+
+document.getElementById("btnSi").style.display =
+"none";
+
+document.getElementById("btnNo").style.display =
+"none";
+
+document.getElementById("btnComenzar").style.display =
+"inline-block";
+
+if(preguntaActual < preguntas.length){
+
+document.getElementById("btnComenzar").innerHTML =
+"➡️ Siguiente Pregunta";
+
+}else{
+
+document.getElementById("btnComenzar").innerHTML =
+"🏆 Ver Resultado Final";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
